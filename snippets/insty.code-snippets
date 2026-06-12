@@ -1,0 +1,193 @@
+{
+  "Module": {
+    "prefix": "module",
+    "body": ["module ${1:main}", "", "$0"],
+    "description": "Module declaration"
+  },
+  "Import": {
+    "prefix": "import",
+    "body": ["import ${1:io}", "$0"],
+    "description": "Import a module"
+  },
+  "Interpolated string": {
+    "prefix": "istr",
+    "body": ["\"${1:text} $${2:value}\""],
+    "description": "Interpolated string literal"
+  },
+  "Import alias": {
+    "prefix": "importas",
+    "body": ["import ${1:io} as ${2:alias}", "$0"],
+    "description": "Import a module with an alias"
+  },
+  "Import wildcard": {
+    "prefix": "importall",
+    "body": ["import ${1:io}*", "$0"],
+    "description": "Wildcard import"
+  },
+  "Selective import": {
+    "prefix": "importsel",
+    "body": ["import ${1:io}.{${2:println}, ${3:print}}", "$0"],
+    "description": "Selective import"
+  },
+  "Function": {
+    "prefix": "fun",
+    "body": [
+      "fun ${1:name}(${2:}) -> ${3:void} {",
+      "\t$0",
+      "}"
+    ],
+    "description": "Function declaration"
+  },
+  "Generic function": {
+    "prefix": "gfun",
+    "body": [
+      "fun ${1:name}<${2:T}>(${2:T} ${3:value}) -> ${2:T} {",
+      "\treturn ${3:value}",
+      "}"
+    ],
+    "description": "Generic function"
+  },
+  "Main": {
+    "prefix": "main",
+    "body": [
+      "fun main() -> i32 {",
+      "\t$0",
+      "\treturn 0",
+      "}"
+    ],
+    "description": "main entry point"
+  },
+  "Struct": {
+    "prefix": "struct",
+    "body": [
+      "struct ${1:Name} {",
+      "\t${2:i32} ${3:field}",
+      "}"
+    ],
+    "description": "Struct declaration"
+  },
+  "Generic struct": {
+    "prefix": "gstruct",
+    "body": [
+      "struct ${1:Name}<${2:T}> {",
+      "\t${2:T} ${3:value}",
+      "}"
+    ],
+    "description": "Generic struct declaration"
+  },
+  "Class": {
+    "prefix": "class",
+    "body": [
+      "class ${1:Name} {",
+      "\tconstructor(${2:}) {",
+      "\t\t$3",
+      "\t}",
+      "",
+      "\t$0",
+      "}"
+    ],
+    "description": "Class declaration"
+  },
+  "Method": {
+    "prefix": "method",
+    "body": [
+      "fun ${1:name}(${2:}) -> ${3:void} {",
+      "\t$0",
+      "}"
+    ],
+    "description": "Class method"
+  },
+  "Operator overload": {
+    "prefix": "operator",
+    "body": [
+      "operator ${1:+}(${2:i32} ${3:rhs}) -> ${4:i32} {",
+      "\t$0",
+      "}"
+    ],
+    "description": "Operator overload"
+  },
+  "Generic constraint": {
+    "prefix": "constraint",
+    "body": [
+      "fun ${1:name}<${2:T}: ${3:Addable}>(${2:T} ${4:value}) -> ${2:T} {",
+      "\treturn ${4:value}",
+      "}"
+    ],
+    "description": "Generic function with trait bounds"
+  },
+  "Enum": {
+    "prefix": "enum",
+    "body": [
+      "enum ${1:Name} : ${2:i32} {",
+      "\t${3:First},",
+      "\t${4:Second}",
+      "}"
+    ],
+    "description": "Enum declaration"
+  },
+  "If": {
+    "prefix": "if",
+    "body": ["if ${1:condition} {", "\t$0", "}"],
+    "description": "If statement"
+  },
+  "If else": {
+    "prefix": "ife",
+    "body": ["if ${1:condition} {", "\t$2", "} else {", "\t$0", "}"],
+    "description": "If / else statement"
+  },
+  "When": {
+    "prefix": "when",
+    "body": ["when ${1:condition} {", "\t$0", "}"],
+    "description": "when statement"
+  },
+  "Switch": {
+    "prefix": "switch",
+    "body": ["switch ${1:subject} {", "\t${2:value} -> ${3:{}}", "\t_ -> ${0:{}}", "}"],
+    "description": "switch statement (Rust-match-like)"
+  },
+  "While": {
+    "prefix": "while",
+    "body": ["while ${1:condition} {", "\t$0", "}"],
+    "description": "while loop"
+  },
+  "Loop": {
+    "prefix": "loop",
+    "body": ["loop {", "\t$0", "}"],
+    "description": "Infinite loop"
+  },
+  "Compile-time if": {
+    "prefix": "#if",
+    "body": ["#if ${1:condition} {", "\t$2", "} #else {", "\t$0", "}"],
+    "description": "Compile-time if"
+  },
+  "Variable": {
+    "prefix": "var",
+    "body": ["${1:i32} ${2:name} = ${3:0}"],
+    "description": "Typed variable declaration"
+  },
+  "Slice variable": {
+    "prefix": "slice",
+    "body": ["${1:i32}[] ${2:items} = ${3:makeItems()}"],
+    "description": "Slice variable declaration"
+  },
+  "Return": {
+    "prefix": "ret",
+    "body": ["return ${1:0}"],
+    "description": "Return statement"
+  },
+  "Cast": {
+    "prefix": "cast",
+    "body": ["cast<${1:i64}>(${2:value})"],
+    "description": "Explicit cast"
+  },
+  "New": {
+    "prefix": "new",
+    "body": ["new ${1:Type}(${2:})"],
+    "description": "Allocate a value"
+  },
+  "Delete": {
+    "prefix": "delete",
+    "body": ["delete ${1:pointer}"],
+    "description": "Delete an allocated value"
+  }
+}

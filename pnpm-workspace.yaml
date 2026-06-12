@@ -1,0 +1,6 @@
+allowBuilds:
+  '@vscode/vsce-sign': false
+  keytar: false
+ignoredBuiltDependencies:
+  - '@vscode/vsce-sign'
+  - keytar

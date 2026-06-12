@@ -1,0 +1,104 @@
+{
+  "name": "insty",
+  "displayName": "Insty Language Support",
+  "description": "Syntax highlighting, snippets, and language server integration for the Insty language.",
+  "version": "0.1.0",
+  "publisher": "insty",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Snippets"
+  ],
+  "keywords": [
+    "insty",
+    "ins",
+    "lsp"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onLanguage:insty"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "insty.restartServer",
+        "title": "Insty: Restart Language Server"
+      }
+    ],
+    "languages": [
+      {
+        "id": "insty",
+        "aliases": [
+          "Insty",
+          "insty"
+        ],
+        "extensions": [
+          ".ins"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "insty",
+        "scopeName": "source.insty",
+        "path": "./syntaxes/insty.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "insty",
+        "path": "./snippets/insty.code-snippets"
+      }
+    ],
+    "configuration": {
+      "title": "Insty",
+      "properties": {
+        "insty.lspPath": {
+          "type": "string",
+          "default": "insty-lsp",
+          "description": "Path to the insty-lsp language server executable. Looked up in PATH when not absolute."
+        },
+        "insty.useTcp": {
+          "type": "boolean",
+          "default": false,
+          "description": "Connect to the language server over TCP instead of stdio."
+        },
+        "insty.tcpPort": {
+          "type": "number",
+          "default": 9257,
+          "description": "TCP port used when insty.useTcp is enabled."
+        },
+        "insty.trace.server": {
+          "type": "string",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "off",
+          "description": "Trace the communication between VS Code and the language server."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "pnpm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts",
+    "package": "vsce package --no-dependencies"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^3.0.0",
+    "typescript": "^5.9.0"
+  }
+}
