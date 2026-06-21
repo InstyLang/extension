@@ -21,3 +21,14 @@ steps:
     commands:
       - corepack enable
       - pnpm run package
+
+  - name: release
+    image: insty-ci:llvm22
+    when:
+      - event: tag
+    environment:
+      GH_TOKEN:
+        from_secret: github_token
+    commands:
+      - gh release create "$CI_COMMIT_TAG" --repo "$CI_REPO" --title "$CI_COMMIT_TAG" --generate-notes || true
+      - gh release upload "$CI_COMMIT_TAG" --repo "$CI_REPO" --clobber *.vsix
