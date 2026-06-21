@@ -1,0 +1,23 @@
+# Woodpecker CI pipeline for the Insty VS Code extension.
+# Note: `lint` is intentionally omitted - the repo declares an eslint script but
+# ships no eslint config/dependency, so it would fail. Add it once eslint is set up.
+
+steps:
+  - name: install
+    image: node:22
+    commands:
+      - corepack enable
+      - pnpm install --frozen-lockfile
+
+  - name: compile
+    image: node:22
+    commands:
+      - corepack enable
+      - pnpm run compile
+      - test -f dist/extension.js
+
+  - name: package
+    image: node:22
+    commands:
+      - corepack enable
+      - pnpm run package
