@@ -119,6 +119,15 @@
     "keywords": {
       "patterns": [
         {
+          "comment": "for-in header: highlight the contextual `in` keyword (and the loop variable) only after `for`.",
+          "match": "\\b(for)\\s+([A-Za-z_][A-Za-z0-9_]*)\\s+(in)\\b",
+          "captures": {
+            "1": { "name": "keyword.control.flow.insty" },
+            "2": { "name": "variable.other.insty" },
+            "3": { "name": "keyword.control.flow.insty" }
+          }
+        },
+        {
           "name": "keyword.control.flow.insty",
           "match": "\\b(if|else|while|for|loop|when|switch|return|break|skip)\\b"
         },
@@ -128,7 +137,7 @@
         },
         {
           "name": "storage.modifier.insty",
-          "match": "\\b(const|let|unsafe|volatile)\\b"
+          "match": "\\b(const|let|unsafe|volatile|extern|export)\\b"
         },
         {
           "name": "variable.language.this.insty",
@@ -144,8 +153,9 @@
       }
     },
     "builtins": {
+      "comment": "Kept in sync with Builtins::kSpecs (Compiler/src/extra/builtins.cpp).",
       "name": "support.function.builtin.insty",
-      "match": "@(syscall|sizeof|alignof|offsetof|typeof|bitcast|inttoptr|ptrtoint|malloc|realloc|free|memcpy|memset|strlen|panic|readFile|system|getCurrentOS|print|println|utf8|utf16|builtin|name)\\b"
+      "match": "@(syscall|strlen|sizeof|alignof|malloc|free|realloc|memset|memcpy|panic|print|println|readFile|system|getCurrentOS|typeof|offsetof|bitcast|inttoptr|ptrtoint|utf16|hostname|processorCount|totalMemory)\\b"
     },
     "strings": {
       "name": "string.quoted.double.insty",
@@ -246,6 +256,16 @@
           "match": "::"
         },
         {
+          "comment": "Half-open range operator, used in for-in headers and slice bounds (a..b).",
+          "name": "keyword.operator.range.insty",
+          "match": "\\.\\."
+        },
+        {
+          "comment": "Return-type arrow (->) and switch-arm / lambda arrow (=>). Plain operator scope; the more specific keyword.operator.arrow scope is coloured red by some themes.",
+          "name": "keyword.operator.insty",
+          "match": "->|=>"
+        },
+        {
           "name": "keyword.operator.comparison.insty",
           "match": "(==|!=|<=|>=)"
         },
@@ -255,23 +275,25 @@
         },
         {
           "name": "keyword.operator.bitwise.insty",
-          "match": "(<<|>>|&|\\||\\^|~)"
+          "match": "(<<|>>|\\||\\^|~)"
         },
         {
-          "name": "keyword.operator.arrow.insty",
-          "match": "->"
+          "comment": "A lone < or > is most commonly a comparison operator. Generic type delimiters (Foo<T>, cast<T>) are scoped by the #types and #cast rules. Using the standard comparison scope keeps them neutrally coloured (not the red of the custom generic-punctuation scope).",
+          "name": "keyword.operator.comparison.insty",
+          "match": "(?<![=<>!+\\-*/%&|^])[<>](?![=<>])"
         },
         {
           "name": "keyword.operator.assignment.insty",
-          "match": "="
+          "match": "(\\+=|-=|\\*=|/=|%=|&=|\\|=|\\^=|<<=|>>=|=)"
+        },
+        {
+          "comment": "Unary address-of / binary bitwise-and; either way colour it as an operator so &x is not plain white.",
+          "name": "keyword.operator.address.insty",
+          "match": "&"
         },
         {
           "name": "keyword.operator.arithmetic.insty",
           "match": "(\\+|-|\\*|/|%)"
-        },
-        {
-          "name": "keyword.operator.comparison.insty",
-          "match": "(<|>)"
         }
       ]
     },
@@ -295,3 +317,5 @@
     }
   }
 }
+
+

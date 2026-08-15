@@ -4,22 +4,25 @@ VS Code support for the Insty language, including TextMate syntax highlighting, 
 
 ## Features
 
-- Syntax highlighting for `.ins` and `.ecc`
+- Syntax highlighting for `.ins`
+- Semantic highlighting from the language server (parser-accurate colors for functions, parameters, variables, types, enums, enum variants, `switch` bindings, and `@builtins`), enabled by default for Insty files
 - Language server integration for diagnostics, completions, hover, go to definition, references, and rename
-- Snippets for modules, imports, functions, classes, structs, enums, generic constraints, loops, casts, and allocation
+- Snippets for modules, imports, functions, classes, structs, enums, sum types, `switch`, `for`-in, loops, casts, and allocation
 - Comment toggling, bracket matching, auto-closing pairs, and folding markers
 
 ## Syntax coverage
 
 The bundled grammar is aligned with the current compiler surface, including:
 
-- Module and import syntax: `module`, `import`, selective imports, wildcard imports, `as`
-- Declarations: `fun`, `struct`, `class`, `enum`, `constructor`, `destructor`, `operator`
-- Control flow: `if`, `else`, `while`, `loop`, `when`, `return`, `break`, `skip`
+- Module and import syntax: `module`, `import`, `::` scopes, selective imports, wildcard imports, `as`
+- Declarations: `fun`, `struct`, `class`, `enum`, `constructor`, `destructor`, `operator`, `section`
+- Control flow: `if`, `else`, `while`, `for ... in`, `loop`, `when`, `switch`, `return`, `break`, `skip`
+- Tagged unions (sum types) and `switch` arms with payload bindings (`=>`)
+- Ranges and slices: `a..b`, `s[a..b]`, `u8[]`
 - Compile-time conditionals: `#if`, `#else`
-- Memory and conversion syntax: `cast<T>(value)`, `new`, `delete`
-- Builtins such as `@syscall`, `@sizeof`, `@typeof`, `@alignof`, `@offsetof`, `@bitcast`, `@inttoptr`, `@ptrtoint`
-- Primitive, pointer, generic, and slice types such as `i32`, `text`, `string`, `Foo<T>`, `Bar*`, `u8[]`
+- Memory and conversion syntax: `cast<T>(value)`, `new`, `delete`, `unsafe`, `volatile`
+- Builtins such as `@syscall`, `@sizeof`, `@alignof`, `@malloc`, `@realloc`, `@free`, `@memcpy`, `@panic`, `@print`
+- Primitive, pointer, generic, and slice types such as `i32`, `text`, `Foo<T>`, `Bar*`, `u8[]`
 - String interpolation: `"value = $x"`, `"sum = ${a + b}"`
 
 ## Example
@@ -27,25 +30,30 @@ The bundled grammar is aligned with the current compiler surface, including:
 ```insty
 module main
 
-import io
-import math.{abs}
+import std::io
 
-class Box<T: Copyable> {
-    T value
+enum Expr {
+    Lit(i64),
+    Add(Expr*, Expr*)
+}
 
-    constructor(T item) {
-        value = item
+fun eval(Expr* e) -> i64 {
+    Expr node
+    unsafe { node = ~e }
+    switch node {
+        Lit(v)    => return v
+        Add(l, r) => return eval(l) + eval(r)
     }
-
-    fun get() -> T {
-        return value
-    }
+    return 0
 }
 
 fun main() -> i32 {
-    Box<i32> box = Box<i32>(42)
-    io.println("value: $box.get()")
-    return abs(-1)
+    i32 total = 0
+    for i in 0..10 {
+        total = total + i
+    }
+    io.println("sum = ${total}")
+    return total
 }
 ```
 
@@ -69,3 +77,7 @@ Settings:
 pnpm install
 pnpm run compile
 ```
+
+
+
+

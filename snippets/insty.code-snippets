@@ -106,15 +106,6 @@
     ],
     "description": "Operator overload"
   },
-  "Generic constraint": {
-    "prefix": "constraint",
-    "body": [
-      "fun ${1:name}<${2:T}: ${3:Addable}>(${2:T} ${4:value}) -> ${2:T} {",
-      "\treturn ${4:value}",
-      "}"
-    ],
-    "description": "Generic function with trait bounds"
-  },
   "Enum": {
     "prefix": "enum",
     "body": [
@@ -123,7 +114,18 @@
       "\t${4:Second}",
       "}"
     ],
-    "description": "Enum declaration"
+    "description": "C-style enum declaration"
+  },
+  "Sum type (tagged union)": {
+    "prefix": "sumenum",
+    "body": [
+      "enum ${1:Expr} {",
+      "\t${2:Lit}(${3:i64}),",
+      "\t${4:Add}(${1:Expr}*, ${1:Expr}*),",
+      "\t${5:Nil}",
+      "}"
+    ],
+    "description": "Tagged-union (sum-type) enum with payload variants"
   },
   "If": {
     "prefix": "if",
@@ -142,18 +144,33 @@
   },
   "Switch": {
     "prefix": "switch",
-    "body": ["switch ${1:subject} {", "\t${2:value} -> ${3:{}}", "\t_ -> ${0:{}}", "}"],
-    "description": "switch statement (Rust-match-like)"
+    "body": ["switch ${1:value} {", "\t${2:Variant}(${3:x}) => ${4:{}}", "\t_ => ${0:{}}", "}"],
+    "description": "switch on a tagged-union value (binds payload fields)"
   },
   "While": {
     "prefix": "while",
     "body": ["while ${1:condition} {", "\t$0", "}"],
     "description": "while loop"
   },
+  "For-in loop": {
+    "prefix": "forin",
+    "body": ["for ${1:x} in ${2:items} {", "\t$0", "}"],
+    "description": "Iterate a slice, array, or text"
+  },
+  "For range": {
+    "prefix": "forr",
+    "body": ["for ${1:i} in ${2:0}..${3:n} {", "\t$0", "}"],
+    "description": "Iterate a half-open integer range"
+  },
   "Loop": {
     "prefix": "loop",
     "body": ["loop {", "\t$0", "}"],
     "description": "Infinite loop"
+  },
+  "Unsafe block": {
+    "prefix": "unsafe",
+    "body": ["unsafe {", "\t$0", "}"],
+    "description": "Unsafe block"
   },
   "Compile-time if": {
     "prefix": "#if",

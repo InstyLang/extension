@@ -19,13 +19,18 @@
   ],
   "main": "./dist/extension.js",
   "activationEvents": [
-    "onLanguage:insty"
+    "onLanguage:insty",
+    "onStartupFinished"
   ],
   "contributes": {
     "commands": [
       {
         "command": "insty.restartServer",
         "title": "Insty: Restart Language Server"
+      },
+      {
+        "command": "insty.showOutput",
+        "title": "Insty: Show Language Server Output"
       }
     ],
     "languages": [
@@ -54,6 +59,11 @@
         "path": "./snippets/insty.code-snippets"
       }
     ],
+    "configurationDefaults": {
+      "[insty]": {
+        "editor.semanticHighlighting.enabled": true
+      }
+    },
     "configuration": {
       "title": "Insty",
       "properties": {
@@ -86,11 +96,11 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "pnpm run compile",
+    "vscode:prepublish": "bun run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "lint": "eslint src --ext ts",
-    "package": "vsce package --no-dependencies"
+    "package": "vsce package"
   },
   "dependencies": {
     "vscode-languageclient": "^9.0.1"

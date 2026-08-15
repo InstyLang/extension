@@ -30,35 +30,39 @@ function resolveServerPath(): string {
     .get<string>("lspPath", "insty-lsp")
     .trim();
 
+  // On Windows the built server is `insty-lsp.exe`; probe with the platform
+  // executable suffix so existence checks against on-disk dev builds succeed.
+  const exeSuffix = process.platform === "win32" ? ".exe" : "";
+  const withExe = (p: string): string =>
+    exeSuffix && !p.toLowerCase().endsWith(exeSuffix) ? p + exeSuffix : p;
+
   if (configured && configured !== "insty-lsp") {
-    if (path.isAbsolute(configured) && fs.existsSync(configured)) {
-      return configured;
+    if (path.isAbsolute(configured)) {
+      if (fs.existsSync(configured)) return configured;
+      const c = withExe(configured);
+      if (fs.existsSync(c)) return c;
     }
     for (const folder of vscode.workspace.workspaceFolders ?? []) {
       const candidate = path.join(folder.uri.fsPath, configured);
-      if (fs.existsSync(candidate)) {
-        return candidate;
-      }
+      if (fs.existsSync(candidate)) return candidate;
+      const c = withExe(candidate);
+      if (fs.existsSync(c)) return c;
     }
     // A bare configured command (e.g. "insty-lsp"): trust PATH lookup.
     return configured;
   }
 
-  // Dev fallback: ../LSP/build/insty-lsp relative to each workspace folder.
+  // Dev fallback: ../LSP/build/insty-lsp relative to each workspace folder
+  // (and a workspace-local LSP/build/). Probe both bare and `.exe` forms.
   for (const folder of vscode.workspace.workspaceFolders ?? []) {
-    const candidate = path.join(
-      folder.uri.fsPath,
-      "..",
-      "LSP",
-      "build",
-      "insty-lsp",
-    );
-    if (fs.existsSync(candidate)) {
-      return candidate;
-    }
-    const sibling = path.join(folder.uri.fsPath, "LSP", "build", "insty-lsp");
-    if (fs.existsSync(sibling)) {
-      return sibling;
+    const bases = [
+      path.join(folder.uri.fsPath, "..", "LSP", "build", "insty-lsp"),
+      path.join(folder.uri.fsPath, "LSP", "build", "insty-lsp"),
+    ];
+    for (const base of bases) {
+      if (fs.existsSync(base)) return base;
+      const c = withExe(base);
+      if (fs.existsSync(c)) return c;
     }
   }
 
@@ -113,6 +117,7 @@ function stdioServerOptions(serverPath: string): ServerOptions {
 export function activate(context: vscode.ExtensionContext): void {
   output = vscode.window.createOutputChannel("Insty Language Server");
   context.subscriptions.push(output);
+  output.appendLine("Insty extension activated.");
 
   const start = () => {
     void startClient(context);
@@ -120,8 +125,15 @@ export function activate(context: vscode.ExtensionContext): void {
 
   context.subscriptions.push(
     vscode.commands.registerCommand("insty.restartServer", async () => {
+      output.appendLine("Restarting language server (insty.restartServer)...");
       await stopClient();
       start();
+    }),
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("insty.showOutput", () => {
+      output.show(true);
     }),
   );
 
@@ -133,6 +145,7 @@ export function activate(context: vscode.ExtensionContext): void {
         event.affectsConfiguration("insty.useTcp") ||
         event.affectsConfiguration("insty.tcpPort")
       ) {
+        output.appendLine("Configuration changed; restarting language server...");
         void (async () => {
           await stopClient();
           start();
@@ -145,6 +158,12 @@ export function activate(context: vscode.ExtensionContext): void {
 }
 
 async function startClient(context: vscode.ExtensionContext): Promise<void> {
+  // Never run two starts concurrently (e.g. activation racing a restart): tear
+  // down any existing client first so `client` is a single source of truth.
+  if (client) {
+    await stopClient();
+  }
+
   const config = vscode.workspace.getConfiguration(LANGUAGE_ID);
   const useTcp = config.get<boolean>("useTcp", false);
   const port = config.get<number>("tcpPort", 9257);
@@ -184,7 +203,10 @@ async function startClient(context: vscode.ExtensionContext): Promise<void> {
     outputChannel: output,
   };
 
-  client = new LanguageClient(
+  // Build the client into a local; only publish it to the module-level `client`
+  // once start() succeeds. On failure we explicitly stop+discard it so a later
+  // restart is not blocked by a half-initialized client instance.
+  const candidate = new LanguageClient(
     LANGUAGE_ID,
     "Insty Language Server",
     serverOptions,
@@ -192,10 +214,14 @@ async function startClient(context: vscode.ExtensionContext): Promise<void> {
   );
 
   try {
-    await client.start();
-    context.subscriptions.push(client);
+    await candidate.start();
+    client = candidate;
+    context.subscriptions.push(candidate);
+    output.appendLine("Language server started.");
   } catch (err) {
     output.appendLine(`Failed to start language server: ${String(err)}`);
+    await candidate.stop().catch(() => undefined);
+    client = undefined;
     void vscode.window.showErrorMessage(
       `Insty language server failed to start: ${String(err)}. ` +
         `Check the "insty.lspPath" setting.`,
