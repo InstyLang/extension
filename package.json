@@ -20,6 +20,7 @@
   "main": "./dist/extension.js",
   "activationEvents": [
     "onLanguage:insty",
+    "workspaceContains:**/*.ins",
     "onStartupFinished"
   ],
   "contributes": {

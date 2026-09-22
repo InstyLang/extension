@@ -66,6 +66,15 @@ function resolveServerPath(): string {
     }
   }
 
+  // Check standard user toolchain directory: ~/.local/insty or ~/AppData/Local/insty
+  const userProfile = process.env.USERPROFILE || process.env.HOME || "";
+  if (userProfile) {
+    const instyDirCandidate = path.join(userProfile, "AppData", "Local", "insty", "insty-lsp.exe");
+    if (fs.existsSync(instyDirCandidate)) return instyDirCandidate;
+    const posixCandidate = path.join(userProfile, ".local", "insty", "insty-lsp");
+    if (fs.existsSync(posixCandidate)) return posixCandidate;
+  }
+
   return configured || "insty-lsp";
 }
 
