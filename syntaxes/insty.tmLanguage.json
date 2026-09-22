@@ -91,7 +91,7 @@
           }
         },
         {
-          "match": "\\b(struct|class|enum)\\s+([A-Za-z_][A-Za-z0-9_]*)",
+          "match": "\\b(struct|class|enum|type)\\s+([A-Za-z_][A-Za-z0-9_]*)",
           "captures": {
             "1": { "name": "keyword.declaration.type.insty" },
             "2": { "name": "entity.name.type.insty" }
@@ -155,43 +155,63 @@
     "builtins": {
       "comment": "Kept in sync with Builtins::kSpecs (Compiler/src/extra/builtins.cpp).",
       "name": "support.function.builtin.insty",
-      "match": "@(syscall|strlen|sizeof|alignof|malloc|free|realloc|memset|memcpy|panic|print|println|readFile|system|getCurrentOS|typeof|offsetof|bitcast|inttoptr|ptrtoint|utf16|hostname|processorCount|totalMemory)\\b"
+      "match": "@(syscall|strlen|sizeof|alignof|malloc|free|realloc|memset|memcpy|panic|print|println|readFile|system|getCurrentOS|typeof|offsetof|bitcast|inttoptr|ptrtoint|utf16|hash|embedFile|embedBytes|targetIs|hostname|processorCount|totalMemory)\\b"
     },
     "strings": {
-      "name": "string.quoted.double.insty",
-      "begin": "\"",
-      "end": "\"",
       "patterns": [
         {
-          "name": "constant.character.escape.insty",
-          "match": "\\\\(x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|[0nrtbfv\\\\\"'\\$])"
-        },
-        {
-          "name": "meta.interpolation.insty",
-          "begin": "\\$\\{",
-          "end": "\\}",
-          "beginCaptures": {
-            "0": { "name": "punctuation.definition.interpolation.begin.insty" }
-          },
-          "endCaptures": {
-            "0": { "name": "punctuation.definition.interpolation.end.insty" }
-          },
+          "name": "string.quoted.byte.insty",
+          "begin": "b\"",
+          "end": "\"",
           "patterns": [
-            { "include": "#builtins" },
-            { "include": "#keywords" },
-            { "include": "#numbers" },
-            { "include": "#operators" },
-            { "include": "#function-call" },
-            { "include": "#identifiers" }
+            {
+              "name": "constant.character.escape.insty",
+              "match": "\\\\(x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|[0nrtbfv\\\\\"'\\$])"
+            }
           ]
         },
         {
-          "name": "meta.interpolation.insty",
-          "match": "(\\$)([A-Za-z_][A-Za-z0-9_.]*)",
-          "captures": {
-            "1": { "name": "punctuation.definition.interpolation.begin.insty" },
-            "2": { "name": "variable.other.interpolated.insty" }
-          }
+          "name": "string.quoted.raw.insty",
+          "begin": "`",
+          "end": "`"
+        },
+        {
+          "name": "string.quoted.double.insty",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            {
+              "name": "constant.character.escape.insty",
+              "match": "\\\\(x[0-9A-Fa-f]{2}|u[0-9A-Fa-f]{4}|[0nrtbfv\\\\\"'\\$])"
+            },
+            {
+              "name": "meta.interpolation.insty",
+              "begin": "\\$\\{",
+              "end": "\\}",
+              "beginCaptures": {
+                "0": { "name": "punctuation.definition.interpolation.begin.insty" }
+              },
+              "endCaptures": {
+                "0": { "name": "punctuation.definition.interpolation.end.insty" }
+              },
+              "patterns": [
+                { "include": "#builtins" },
+                { "include": "#keywords" },
+                { "include": "#numbers" },
+                { "include": "#operators" },
+                { "include": "#function-call" },
+                { "include": "#identifiers" }
+              ]
+            },
+            {
+              "name": "meta.interpolation.insty",
+              "match": "(\\$)([A-Za-z_][A-Za-z0-9_.]*)",
+              "captures": {
+                "1": { "name": "punctuation.definition.interpolation.begin.insty" },
+                "2": { "name": "variable.other.interpolated.insty" }
+              }
+            }
+          ]
         }
       ]
     },
@@ -232,13 +252,17 @@
     },
     "constants": {
       "name": "constant.language.insty",
-      "match": "\\b(true|false)\\b"
+      "match": "\\b(true|false|null|none)\\b"
     },
     "types": {
       "patterns": [
         {
           "name": "support.type.primitive.insty",
-          "match": "\\b(void|bool|text|string|i8|i16|i32|i64|i128|u8|u16|u32|u64|u128|f16|f32|f64|f128)\\b"
+          "match": "\\b(void|bool|text|string|object|any|i8|i16|i32|i64|i128|u8|u16|u32|u64|u128|f16|f32|f64|f128)\\b"
+        },
+        {
+          "name": "support.type.function.insty",
+          "match": "\\b(func)\\s*(?=<)"
         },
         {
           "comment": "User type used in a generic position: Foo<...>",

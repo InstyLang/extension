@@ -197,6 +197,45 @@
     "body": ["cast<${1:i64}>(${2:value})"],
     "description": "Explicit cast"
   },
+  "Type alias": {
+    "prefix": "type",
+    "body": ["type ${1:Name} = ${2:i64}"],
+    "description": "Type alias definition"
+  },
+  "Export type alias": {
+    "prefix": "etype",
+    "body": ["export type ${1:Name} = ${2:i64}"],
+    "description": "Exported type alias definition"
+  },
+  "Comptime function": {
+    "prefix": "cfun",
+    "body": [
+      "fun [comptime(on)] ${1:name}(${2:}) -> ${3:i64} {",
+      "\t$0",
+      "}"
+    ],
+    "description": "Compile-time evaluated function"
+  },
+  "Function type": {
+    "prefix": "func",
+    "body": ["func<(${1:}) -> ${2:void}>"],
+    "description": "First-class function type signature"
+  },
+  "Tuple destructuring": {
+    "prefix": "tupd",
+    "body": ["(${1:i32 a}, ${2:i32 b}) = ${3:value}"],
+    "description": "Destructuring assignment"
+  },
+  "Embed file": {
+    "prefix": "embedf",
+    "body": ["@embedFile(\"${1:path}\")"],
+    "description": "Embed file contents as compile-time text"
+  },
+  "Embed bytes": {
+    "prefix": "embedb",
+    "body": ["@embedBytes(\"${1:path}\")"],
+    "description": "Embed file contents as compile-time byte slice"
+  },
   "New": {
     "prefix": "new",
     "body": ["new ${1:Type}(${2:})"],

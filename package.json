@@ -2,7 +2,7 @@
   "name": "insty",
   "displayName": "Insty Language Support",
   "description": "Syntax highlighting, snippets, and language server integration for the Insty language.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "publisher": "insty",
   "license": "MIT",
   "engines": {
@@ -96,7 +96,6 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "bun run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "lint": "eslint src --ext ts",
