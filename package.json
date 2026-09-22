@@ -2,7 +2,7 @@
   "name": "insty",
   "displayName": "Insty Language Support",
   "description": "Syntax highlighting, snippets, and language server integration for the Insty language.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "publisher": "insty",
   "license": "MIT",
   "engines": {
@@ -64,6 +64,19 @@
         "editor.semanticHighlighting.enabled": true
       }
     },
+    "semanticTokenScopes": [
+      {
+        "language": "insty",
+        "scopes": {
+          "class": ["entity.name.type.class.insty"],
+          "struct": ["entity.name.type.struct.insty"],
+          "enum": ["entity.name.type.enum.insty"],
+          "type": ["entity.name.type.alias.insty"],
+          "variable.unused": ["markup.ignored.unused.insty"],
+          "parameter.unused": ["markup.ignored.unused.insty"]
+        }
+      }
+    ],
     "configuration": {
       "title": "Insty",
       "properties": {
